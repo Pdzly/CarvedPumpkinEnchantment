@@ -1,0 +1,4 @@
+name: RookisCustomEnchantments
+version: '${project.version}'
+main: world.lemmy.rookiscustomenchantments.RookisCustomEnchantments
+api-version: '1.20'
