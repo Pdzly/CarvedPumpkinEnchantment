@@ -1,69 +1,36 @@
 package world.lemmy.rookiscustomenchantments.enchantments;
 
 import io.papermc.paper.enchantments.EnchantmentRarity;
-import io.papermc.paper.event.block.BlockBreakBlockEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.EntityCategory;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.VillagerAcquireTradeEvent;
-import org.bukkit.event.player.PlayerItemBreakEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MerchantRecipe;
 import org.jetbrains.annotations.NotNull;
 import world.lemmy.rookiscustomenchantments.RookisCustomEnchantments;
+import world.lemmy.rookiscustomenchantments.enchantments.trades.TradeConfig;
 
 import java.util.Set;
 
-public class CarvedPumpkinEnchantment extends Enchantment implements Listener {
-
-    // TO DO
-    // @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-
-    public void onEnchantPopulateVillagerAcquire(VillagerAcquireTradeEvent event) {
-        MerchantRecipe recipe = event.getRecipe();
-        ItemStack result = recipe.getResult();
-        if (result.getType() != Material.ENCHANTED_BOOK) return;
-        if (!result.getEnchantments().containsKey(this)) {
-            if(Math.random() < 0.25){
-                result.addEnchantment(this, 1);
-            }
-        }
-    }
-    @EventHandler
-    public void onPlayerDestroysPumpkin(BlockBreakEvent event){
-        Player p = event.getPlayer();
-        if(p.getInventory().getItemInMainHand().containsEnchantment(this)){
-            if(event.getBlock().getType() == Material.PUMPKIN){
-                event.setDropItems(false);
-                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.CARVED_PUMPKIN));
-            }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event){
-        Player p = event.getPlayer();
-        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
-        item.addUnsafeEnchantment(this, 1);
-        p.getInventory().addItem(item);
-    }
+public class CarvedPumpkinEnchantment extends CustomEnchantment {
 
     public CarvedPumpkinEnchantment(RookisCustomEnchantments plugin) {
-        super(new NamespacedKey(plugin, "carved_pumpkin"));
+        super(NamespacedKey.minecraft("carved_pumpkin"));
+
+        TradeConfig trConfig = new TradeConfig();
+
+        trConfig.setTradeChance(0.25);
+        trConfig.setTradeCosts(30);
+        trConfig.setTradeCostsMax(60);
+
+        this.setTradeConfig(trConfig);
     }
     @Override
     public @NotNull String getName() {
-        return "PumpkinCarver";
+        return "Pumpkin Carver";
     }
 
     @Override
@@ -104,12 +71,7 @@ public class CarvedPumpkinEnchantment extends Enchantment implements Listener {
 
     @Override
     public @NotNull Component displayName(int level) {
-        return Component.text("Carved Pumpkin");
-    }
-
-    @Override
-    public boolean isTradeable() {
-        return true;
+        return Component.text(this.returnEnchantmentName(level));
     }
 
     @Override
